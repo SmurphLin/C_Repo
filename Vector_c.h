@@ -11,88 +11,84 @@
 
 #ifndef Vector_c_h
 #define Vector_c_h
+
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <errno.h>
-#include <err.h>
 #include <assert.h>
 
+// define the structure abstractly
+typedef struct C_Vector{
+    double *data_;
+    int size_;
 
-#define NAME_BUFFER_SIZE 20
+}C_Vector;
 
-typedef int (*vector)(int);
-
-typedef int (*pass_two_ints)(int, int);
-
-typedef char (*set_name)(int, char);
-
-
-// base structure vector_c
-typedef struct Vector_c {
-    double* data;
-    int size;
-}Vector_c;
-
-// base structure matrix_c
-typedef struct Matrix_c {
-    double* data;
-    int n_row;
-    int m_col;
-}matrix_c;
-
-// vector constructor
-inline void Vec_alloc(Vector_c* vec, int magnitude){
-    
-    // set the size of the vector
-    vec->size = magnitude;
-    
-    // allocate memory for vector
-    vec->data = (double*)malloc(magnitude*sizeof(double));
-    
-    // set the empty vector values to 000 to indicate an empty vector
-    //for(int i=0; i < vec->size; i++){
-    //  vec->data[i] = 000;
-    //}
-    
+// init the struct
+void Vector_Alloc(C_Vector* in, const int sz){
+    in->size_ = sz;
+    in->data_ = (double*)malloc(sz* sizeof(double));
+    assert(in->data_ != NULL);
 }
 
-// clear pointers i.e. set to 0 and call the free function
-inline void Vec_dealloc(Vector_c* vec){
-    if(vec->data != NULL){
-        printf("WARNING: vector_c pointer still points to a memory location...\n");
-        printf("clearning pointer ...'n");
-        vec->data = NULL;
-        printf("pointer cleared, releasing allocated memory ... \n");
-        free(vec->data);
-        printf("allocated memory has been released ...\n");
+// set data
+void set_data(C_Vector* in, int i, double value){
+   assert(i >= 0 && i < in->size_);
+    in->data_[i] = value;
+}
+
+// print vector values
+void vector_print(C_Vector* in){
+    for(int i=0; i < in->size_; i++){
+        printf("|%f|\n", in->data_[i]);
     }
 }
 
-// access vector elements
-//typedef double (*vector_element_access)(Vector_c*, int);
-
-inline double getVecelmt(Vector_c* vec, int i){
-    if(i >= vec->size){
-        printf("ERROR: Vector index access is out of bounds ...\n");
-        exit(1);
-    }
-    else{
-        return vec->data[i];
+// vector addition(must take 2 vectors and return a new vector)
+void sum_C_Vector(C_Vector* x, const C_Vector* y, const C_Vector* z){
+    // check for length equality
+    assert(x->size_ == y->size_);
+    assert(y->size_ == z->size_);
+    for(int i=0; i < z->size_; ++i){
+        x->data_[i] = (y->data_[i]+z->data_[i]);
     }
 }
 
-// set vector elements
-inline void setVecelmt(Vector_c* vec, double value, int i){
-    if(i >= vec->size){
-        printf("ERROR: Vector index access is out of bounds ...\n");
-        exit(1);
+// dot product
+double c_dot(C_Vector* x, C_Vector* y){
+    assert(x->size_ == y->size_);
+    double sum_dot = 0.0;
+    for(int i=0; i < x->size_; i++){
+        sum_dot += (x->data_[i]*y->data_[i]);
     }
-    else{
-        vec->data[i] = value;
+    assert(sum_dot >= 0.0);
+    return sum_dot;
+}
+
+// zeros vector
+void c_zeros(C_Vector* x){
+    assert(x->size_ > 0);
+    assert(x->data_ != NULL);
+    for(int i=0; i < x->size_; i++){
+        x->data_[i] = 0.0;
     }
 }
 
+// ones vector
+void c_ones(C_Vector* x){
+    assert(x->size_ > 0);
+    assert(x->data_ != NULL);
+    for(int i=0; i < x->size_; i++){
+        x->data_[i] = 1.0;
+    }
+}
+
+// scalar multiplication
+void scale(C_Vector* x, double scaler){
+    assert(x->size_ > 0);
+    for(int i=0; i< x->size_; i++){
+        x->data_[i] = scaler*(x->data_[i]);
+    }
+}
 
 #endif /* Vector_c_h */
