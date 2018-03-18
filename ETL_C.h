@@ -114,3 +114,23 @@ void configureJSON(char filename[]){
 
 
 #endif //ETL_C_ETL_C_H
+
+// from JSON_ETL header file
+/*
+if(n_json_files > 1){
+current = i - previous;
+char *json_stream_out = (char*)malloc(current*sizeof(char));
+for(int m = 0; m < current; m++){
+*(json_stream_out + m) = *(json_stream + i);
+}
+FILE *f_write;
+f_write = fopen("json.txt", "w");
+
+// write the file to location
+fwrite(json_stream_out, current, sizeof(json_stream_out), f_write);
+fclose(f_write);
+// free allocated memory
+//free(f_write);
+//f_write = NULL;
+previous = i; // new byte count
+}*/
